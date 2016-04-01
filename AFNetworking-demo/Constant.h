@@ -33,6 +33,5 @@ CONST(KEY_KEYCHAIN_SERVICE, "AFNetworking-demo");
 
 
 @interface Constant : NSObject
-@property (strong,nonatomic) NSString *ip;
-+ (Constant*)shareInstance;
+
 @end

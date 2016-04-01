@@ -28,7 +28,7 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 
     NSDictionary *param = @{@"username": self.username.text,@"password":self.password.text};
-    [User getUser:param success:^(User *user) {
+    [User login:param Success:^(NSURLSessionDataTask *task, User *user, id responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
 #warning: 把登陆后的用户存入单例中   参照博客 http://www.skyfox.org/ios-login-info-save.html
         [AppDelegate APP].user = user;
@@ -37,9 +37,10 @@
                 _finished(user);
             }];
         }
-    } failed:^(NSError *error) {
+    } Failure:^(NSURLSessionDataTask *task, NSError *error) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-         [JKAlert showMessage:@"提示" message:@"登陆失败"];
+        NSLog(@"登陆失败");
     }];
+  
 }
 @end

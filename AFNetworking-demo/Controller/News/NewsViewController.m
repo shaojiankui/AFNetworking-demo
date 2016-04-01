@@ -43,14 +43,15 @@ static NSString *CellIdentifier = @"NewsCell";
 
 -(void)loadData{
     NSDictionary *param = @{@"newsid": @"111"};
-    [News getNewsList:param withBlock:^(NSArray *list, NSError *error) {
-        if (error) {
-            NSLog(@"网络请求失败");
-            return;
-        }
-        self.dataArray = [NSMutableArray arrayWithArray:list];
+    [News getNewsList:param Success:^(NSURLSessionDataTask *task, NSArray *newList, id responseObject) {
+       
+        self.dataArray = [NSMutableArray arrayWithArray:newList];
         [self.myTableView reloadData];
-    }] ;
+        
+    } Failure:^(NSURLSessionDataTask *task, NSError *error) {
+        NSLog(@"网络请求失败");
+
+    }];
 
 
 }

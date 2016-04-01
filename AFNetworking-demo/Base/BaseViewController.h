@@ -8,9 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NSDictionary+SafeAccess.h"
-#import "JKAlert.h"
 #import "MBProgressHUD.h"
-#import "Util.h"
 #import "Constant.h"
 @interface BaseViewController : UIViewController
 

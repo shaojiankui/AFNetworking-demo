@@ -7,22 +7,16 @@
 //
 
 #import "User.h"
-#import "APIClient.h"
+#import "APIManager.h"
 #import "SSKeychain.h"
 @implementation User
-+(BOOL)propertyIsOptional:(NSString*)propertyName
-{
-    return YES;
-}
 
++ (NSURLSessionDataTask*)login:(NSDictionary *)param
+                         Success:(void (^)(NSURLSessionDataTask *task,User *user,id responseObject))success
+                         Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue{
 
-+ (AFHTTPRequestOperation *)getUser:(NSDictionary *)paramDic
-                          success:(void (^)(User *user))success
-                            failed:(void (^)(NSError *error))failed{
-
-    NSLog(@"paramDic%@",paramDic);
+    NSLog(@"paramDic%@",param);
     //直接发送json给服务器端   对应[AFJSONRequestSerializer serializer];
-    NSDictionary *param = paramDic;
     
     //将请求参数转换为json后放入key为jsonString的字典中发送请求    对应[AFHTTPRequestSerializer serializer];
    // NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
@@ -30,27 +24,26 @@
     
     //服务器端写法见工程目录的server.php
     
-    return [[APIClient sharedClient] POST:@"getUser.do" parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    return [APIManager SafePOST:@"getUser.do" parameters:param success:^(NSURLSessionDataTask *task, id responseObject) {
         User *user =  [[User alloc] initWithDictionary:responseObject error:nil];
         
-        success(user);
+        success(task,user,responseObject);
         
         
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         failed(error);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+         failue(task,error);
     }];
 }
 
-+ (AFHTTPRequestOperation *)getSomeTypes:(NSDictionary *)paramDic
-                             withBlock:(void (^)(NSDictionary *types, NSError *error))block{
++ (NSURLSessionDataTask *)getSomeTypes:(NSDictionary *)paramDic
+                               Success:(void (^)(NSURLSessionDataTask *task,id responseObject))success
+                               Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue{
     
-    return [[APIClient sharedClient] POST:@"getTypes.do" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        block(responseObject, nil);
+    return [APIManager SafePOST:@"getTypes.do" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        success(task,responseObject);
         
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        if (block) {
-            block(nil, error);
-        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        failue(task,error);
     }];
 };
 

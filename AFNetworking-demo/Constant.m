@@ -9,16 +9,6 @@
 #define SYNTHESIZE_CONSTS
 #import "Constant.h"
 @implementation Constant
-+ (Constant*)shareInstance
-{
-    static Constant *share = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        share = [[Constant alloc] init];
-        
-    });
-    return share;
-}
 
 
 @end

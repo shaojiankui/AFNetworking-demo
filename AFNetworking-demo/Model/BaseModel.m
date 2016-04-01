@@ -22,4 +22,8 @@
 - (NSDictionary *)dictionary {
     return [self toDictionary];
 }
++(BOOL)propertyIsOptional:(NSString*)propertyName
+{
+    return YES;
+}
 @end

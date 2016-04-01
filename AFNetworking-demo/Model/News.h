@@ -17,9 +17,7 @@
 
 //返回news 实体数组
 + (NSURLSessionDataTask *)getNewsList:(NSDictionary *)paramDic
-                        withBlock:(void (^)(NSArray *list, NSError *error))block;
+                              Success:(void (^)(NSURLSessionDataTask *task,NSArray *newList,id responseObject))success
+                              Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue;
 
-//返回数据数组 没有进行实体转换
-+ (NSURLSessionDataTask *)getNewsDataList:(NSDictionary *)paramDic
-                            withBlock:(void (^)(NSArray *list, NSError *error))block;
 @end

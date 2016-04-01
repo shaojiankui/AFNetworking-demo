@@ -20,12 +20,13 @@
 
 
 //登陆
-+ (NSURLSessionDataTask *)getUser:(NSDictionary *)paramDic
-                          success:(void (^)(User *user))block
-                           failed:(void (^)(NSError *error))error;
++ (NSURLSessionDataTask*)login:(NSDictionary *)param
+                       Success:(void (^)(NSURLSessionDataTask *task,User *user,id responseObject))success
+                       Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue;
 
 + (NSURLSessionDataTask *)getSomeTypes:(NSDictionary *)paramDic
-                        withBlock:(void (^)(NSDictionary *types, NSError *error))block;
+                               Success:(void (^)(NSURLSessionDataTask *task,id responseObject))success
+                               Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue;
 
 //注销
 + (void)logoutAccount;

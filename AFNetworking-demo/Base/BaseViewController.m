@@ -26,15 +26,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0f) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-        self.extendedLayoutIncludesOpaqueBars = NO;
-        self.navigationController.navigationBar.translucent = NO;
-        self.modalPresentationCapturesStatusBarAppearance = NO;
-        
-    }
 }
 
 - (void)didReceiveMemoryWarning
