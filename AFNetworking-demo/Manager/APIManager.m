@@ -20,7 +20,7 @@ static APIManager *_sharedManager = nil;
     dispatch_once(&onceToken, ^{
         //设置服务器根地址
         _sharedManager = [[APIManager alloc] initWithBaseURL:[NSURL URLWithString:[URI_BASE_SERVER stringByAppendingString:URI_ROOT]]];
-        [_sharedManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey]];
+        [_sharedManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone]];
         
         [_sharedManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             switch (status) {
@@ -74,7 +74,7 @@ static APIManager *_sharedManager = nil;
     APIManager *manager = [APIManager sharedManager];
     //todo 统一封装请求参数
 
-    return [manager POST:URLString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+    return [manager POST:URLString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         //todo 统一处理响应数据
         success(task,responseObject);
         
@@ -89,7 +89,7 @@ static APIManager *_sharedManager = nil;
                            failure:(void (^)(NSURLSessionDataTask * task, NSError *error))failure{
     APIManager *manager = [APIManager sharedManager];
     
-    return [manager GET:URLString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+    return [manager GET:URLString parameters:parameters  progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
         //todo
         success(task,responseObject);
         
@@ -98,7 +98,31 @@ static APIManager *_sharedManager = nil;
         failure(task,error);
     }];
 }
+- (void)downloadFileWithURL:(NSString*)requestURLString
+                 parameters:(NSDictionary *)parameters
+                  savedPath:(NSString*)savedPath
+            downloadSuccess:(void (^)(NSURLResponse *response, NSURL *filePath))success
+            downloadFailure:(void (^)(NSError *error))failure
+           downloadProgress:(void (^)(NSProgress *downloadProgress))progress
 
+{
+    
+    AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
+    NSMutableURLRequest *request =[serializer requestWithMethod:@"POST" URLString:requestURLString parameters:parameters error:nil];
+    NSURLSessionDownloadTask *task = [[AFHTTPSessionManager manager] downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
+        progress(downloadProgress);
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        return [NSURL fileURLWithPath:savedPath];
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        if(error){
+            failure(error);
+        }else{
+            success(response,filePath);
+        }
+    }];
+    [task resume];
+    
+}
 //设置ip要重置单例 生效
 + (void)reset {
     _sharedManager = nil;

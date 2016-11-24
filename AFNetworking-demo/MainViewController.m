@@ -19,7 +19,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "AFURLSessionManager.h"
-
+#import "AFHTTPSessionManager.h"
+#import "APIManager.h"
 @interface MainViewController ()
 
 @end
@@ -80,7 +81,16 @@
 
     }];
 }
+- (IBAction)downloadTouched:(id)sender {
+    NSString *savedPath = [NSHomeDirectory() stringByAppendingString:@"/Documents/QQ7.6.exe"];
+   [self downloadFileWithURL:@"http://dldir1.qq.com/qqfile/qq/QQ7.6/15742/QQ7.6.exe" parameters:@{@"userid":@"123123"} savedPath:savedPath downloadSuccess:^(NSURLResponse *response, NSURL *filePath) {
+       
+   } downloadFailure:^(NSError *error) {
+       
+   } downloadProgress:^(NSProgress *downloadProgress) {
+      NSLog(@"总大小：%lld,当前大小:%lld",downloadProgress.totalUnitCount,downloadProgress.completedUnitCount);
+   }];
 
-
+}
 
 @end

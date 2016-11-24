@@ -1,5 +1,5 @@
 // UIButton+AFNetworking.m
-// Copyright (c) 2011–2015 Alamofire Software Foundation (http://alamofire.org/)
+// Copyright (c) 2011–2016 Alamofire Software Foundation ( http://alamofire.org/ )
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -103,10 +103,7 @@ static const char * af_backgroundImageDownloadReceiptKeyForState(UIControlState 
 
 + (AFImageDownloader *)sharedImageDownloader {
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu"
     return objc_getAssociatedObject(self, @selector(sharedImageDownloader)) ?: [AFImageDownloader defaultInstance];
-#pragma clang diagnostic pop
 }
 
 + (void)setSharedImageDownloader:(AFImageDownloader *)imageDownloader {
@@ -161,12 +158,14 @@ static const char * af_backgroundImageDownloadReceiptKeyForState(UIControlState 
         }
 
         __weak __typeof(self)weakSelf = self;
+        NSUUID *downloadID = [NSUUID UUID];
         AFImageDownloadReceipt *receipt;
         receipt = [downloader
                    downloadImageForURLRequest:urlRequest
+                   withReceiptID:downloadID
                    success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                       if ([strongSelf isActiveTaskURLEqualToURLRequest:request forState:state]) {
+                       if ([[strongSelf af_imageDownloadReceiptForState:state].receiptID isEqual:downloadID]) {
                            if (success) {
                                success(request, response, responseObject);
                            } else if(responseObject) {
@@ -178,7 +177,7 @@ static const char * af_backgroundImageDownloadReceiptKeyForState(UIControlState 
                    }
                    failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                       if ([strongSelf isActiveTaskURLEqualToURLRequest:request forState:state]) {
+                       if ([[strongSelf af_imageDownloadReceiptForState:state].receiptID isEqual:downloadID]) {
                            if (failure) {
                                failure(request, response, error);
                            }
@@ -218,7 +217,7 @@ static const char * af_backgroundImageDownloadReceiptKeyForState(UIControlState 
         return;
     }
 
-    [self cancelImageDownloadTaskForState:state];
+    [self cancelBackgroundImageDownloadTaskForState:state];
 
     AFImageDownloader *downloader = [[self class] sharedImageDownloader];
     id <AFImageRequestCache> imageCache = downloader.imageCache;
@@ -229,33 +228,35 @@ static const char * af_backgroundImageDownloadReceiptKeyForState(UIControlState 
         if (success) {
             success(urlRequest, nil, cachedImage);
         } else {
-            [self setImage:cachedImage forState:state];
+            [self setBackgroundImage:cachedImage forState:state];
         }
         [self af_setBackgroundImageDownloadReceipt:nil forState:state];
     } else {
         if (placeholderImage) {
-            [self setImage:placeholderImage forState:state];
+            [self setBackgroundImage:placeholderImage forState:state];
         }
 
         __weak __typeof(self)weakSelf = self;
+        NSUUID *downloadID = [NSUUID UUID];
         AFImageDownloadReceipt *receipt;
         receipt = [downloader
                    downloadImageForURLRequest:urlRequest
+                   withReceiptID:downloadID
                    success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull responseObject) {
                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                       if ([strongSelf isActiveBackgroundTaskURLEqualToURLRequest:request forState:state]) {
+                       if ([[strongSelf af_backgroundImageDownloadReceiptForState:state].receiptID isEqual:downloadID]) {
                            if (success) {
                                success(request, response, responseObject);
                            } else if(responseObject) {
-                               [strongSelf setImage:responseObject forState:state];
+                               [strongSelf setBackgroundImage:responseObject forState:state];
                            }
-                           [strongSelf af_setImageDownloadReceipt:nil forState:state];
+                           [strongSelf af_setBackgroundImageDownloadReceipt:nil forState:state];
                        }
 
                    }
                    failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
                        __strong __typeof(weakSelf)strongSelf = weakSelf;
-                       if ([strongSelf isActiveBackgroundTaskURLEqualToURLRequest:request forState:state]) {
+                       if ([[strongSelf af_backgroundImageDownloadReceiptForState:state].receiptID isEqual:downloadID]) {
                            if (failure) {
                                failure(request, response, error);
                            }
