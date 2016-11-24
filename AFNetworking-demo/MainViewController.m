@@ -82,8 +82,8 @@
     }];
 }
 - (IBAction)downloadTouched:(id)sender {
-    NSString *savedPath = [NSHomeDirectory() stringByAppendingString:@"/Documents/QQ7.6.exe"];
-   [self downloadFileWithURL:@"http://dldir1.qq.com/qqfile/qq/QQ7.6/15742/QQ7.6.exe" parameters:@{@"userid":@"123123"} savedPath:savedPath downloadSuccess:^(NSURLResponse *response, NSURL *filePath) {
+   NSString *savedPath = [NSHomeDirectory() stringByAppendingString:@"/Documents/QQ7.6.exe"];
+   [[APIManager sharedManager] downloadFileWithURL:@"http://dldir1.qq.com/qqfile/qq/QQ7.6/15742/QQ7.6.exe" parameters:@{@"userid":@"123123"} savedPath:savedPath downloadSuccess:^(NSURLResponse *response, NSURL *filePath) {
        
    } downloadFailure:^(NSError *error) {
        
