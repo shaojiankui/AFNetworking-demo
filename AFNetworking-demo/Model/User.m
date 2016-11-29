@@ -40,6 +40,8 @@
                                Failure:(void (^)(NSURLSessionDataTask *task,NSError *error))failue{
     
     return [APIManager SafePOST:@"getTypes.do" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+//        task.respons
+        
         success(task,responseObject);
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {

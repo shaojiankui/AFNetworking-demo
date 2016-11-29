@@ -34,6 +34,7 @@
     self.title = @"主页";
     self.headPhoto.layer.cornerRadius = self.headPhoto.frame.size.width/2;
     self.headPhoto.layer.masksToBounds = YES;
+   
 }
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
@@ -57,6 +58,8 @@
 - (IBAction)newsTouched:(id)sender {
     NewsViewController *news = [[NewsViewController alloc]init];
     [self.navigationController pushViewController:news animated:YES];
+    
+    
 }
 
 //json 中各种类型的取法  model请求接口
@@ -91,6 +94,46 @@
       NSLog(@"总大小：%lld,当前大小:%lld",downloadProgress.totalUnitCount,downloadProgress.completedUnitCount);
    }];
 
+    
+ 
 }
+//一个简单的demo
++ (NSURLSessionDataTask *)X_POST:(NSString *)URLString
+                        parameters:(id)parameters
+                           success:(void (^)(id responseObject))success
+                           failure:(void (^)(NSError *error))failure{
+    AFHTTPSessionManager *manager =  [AFHTTPSessionManager manager];
+    //发送json数据  {"key":"value","key2":"value2"}
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    //响应json数据
+    manager.responseSerializer  = [AFJSONResponseSerializer serializer];
+    
+    ////发送二进制form数据 key=value&key2=value2
+    //manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    ////响应二进制form数据
+    //manager.responseSerializer  = [AFHTTPResponseSerializer serializer];
+    
+    //直接发送JSON给服务器端   对应[AFJSONRequestSerializer serializer];
+    //实际httpbody中的数据为 {"name":"sky","password":"fox"}
+    NSDictionary *parametersDemo = @{@"name":@"sky",@"password":@"fox"};
+    
 
+    ////将请求参数转换为JSON后放入key为aJSON的字典中发送请求    对应[AFHTTPRequestSerializer serializer];
+    ////实际httpbody中的数据为  {"aJSON":"{"name":"sky","password":"fox"}","key":"value"}
+    // NSDictionary *parametersJSON = @{@"name":@"sky",@"password":@"fox"};
+    //NSMutableDictionary *parametersDemo = @{@"aJSON":[parametersJSON toJSONString],@"key":@"value"};
+   
+   
+    
+    manager.responseSerializer.acceptableContentTypes =  [manager.responseSerializer.acceptableContentTypes setByAddingObjectsFromSet:[NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml",nil]];
+    return  [manager POST:URLString parameters:parametersDemo progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        success(responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSString *responseString =  [[NSString alloc] initWithData:(NSData *)error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",responseString);
+        failure(error);
+    }];
+}
 @end
